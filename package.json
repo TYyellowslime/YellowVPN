@@ -7,7 +7,7 @@
   "scripts": {
     "prepare-www": "node scripts/prepare.js",
     "start": "npm run prepare-www && electron .",
-    "build:win": "npm run prepare-www && electron-builder --win",
+    "build:win": "npm run prepare-www && electron-builder --win --publish never",
     "android:init": "npm run prepare-www && cap add android && cap sync android",
     "android:sync": "npm run prepare-www && cap sync android"
   },
