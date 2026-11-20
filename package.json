@@ -1,0 +1,31 @@
+{
+  "name": "yellow-vpn-app",
+  "version": "3.0.1",
+  "description": "Yellow VPN — Windows и Android версия расширения",
+  "main": "electron/main.js",
+  "author": "Yellow VPN",
+  "scripts": {
+    "prepare-www": "node scripts/prepare.js",
+    "start": "npm run prepare-www && electron .",
+    "build:win": "npm run prepare-www && electron-builder --win",
+    "android:init": "npm run prepare-www && cap add android && cap sync android",
+    "android:sync": "npm run prepare-www && cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.yellowvpn.app",
+    "productName": "Yellow VPN",
+    "files": ["electron/**", "www/**", "build/icon.png"],
+    "win": { "target": ["nsis", "portable"], "icon": "build/icon.png" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
+    "directories": { "output": "dist" }
+  }
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Yellow VPN</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <div class="gear-spinner">
+            <div class="gear-inner"></div>
+            <div class="gear-outer"></div>
+          </div>
+        </div>
+        <div class="loading-text" id="loadingText">Загрузка...</div>
+      </div>
+    </div>
+    
+    <div id="conflictOverlay" class="modal hidden conflict-overlay">
+      <div class="conflict-card">
+        <h3 id="conflictTitle">Обнаружен конфликт прокси</h3>
+        <p id="conflictText">В браузере найдено другое VPN‑расширение, которое управляет прокси. Удалите сторонние VPN‑расширения, иначе Yellow VPN работать не будет.</p>
+        <button id="openExtensions" class="btn btn-soft wide">Открыть страницу расширений</button>
+      </div>
+    </div>
+    <div class="card glass">
+      <a class="tg-top" href="tg://resolve?domain=aurora_vpn_extension" target="_blank" rel="noopener" title="Telegram">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" fill="url(#tg_grad)"/>
+          <path d="M22.9866 10.2088C23.1112 9.40332 22.3454 8.76755 21.6292 9.082L7.36482 15.3448C6.85123 15.5703 6.8888 16.3483 7.42147 16.5179L10.3631 17.4547C10.9246 17.6335 11.5325 17.541 12.0228 17.2023L18.655 12.6203C18.855 12.4821 19.073 12.7665 18.9021 12.9426L14.1281 17.8646C13.665 18.3421 13.7569 19.1512 14.314 19.5005L19.659 22.8523C20.2585 23.2282 21.0297 22.8506 21.1418 22.1261L22.9866 10.2088Z" fill="white"/>
+          <defs>
+            <linearGradient id="tg_grad" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#37BBFE"/>
+              <stop offset="1" stop-color="#007DBB"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </a>
+      <div class="brand">
+        <div class="logo-aurora" aria-hidden="true"></div>
+        <div class="titles">
+        <h1 style="position:relative"><span id="titleText">Yellow VPN</span> <span id="premiumBadge" class="premium-badge" style="display:none"></span><div id="premiumTooltip" class="premium-tooltip"></div></h1>
+          <p class="subtitle">Выберите регион</p>
+        </div>
+      </div>
+
+      <div id="authContainer" class="auth-container" style="display:none">
+        <input id="authUsername" type="text" />
+        <input id="authPassword" type="password" />
+        <button id="authSubmit" class="btn btn-soft wide"></button>
+        <button id="toggleAuth" class="btn btn-link"></button>
+        <div id="authError" class="error-message" style="display:none"></div>
+        <a id="forgotPassword" href="https://links-aurora.pro/my_account" target="_blank" rel="noopener" class="btn btn-link" style="display:none;margin-top:4px;font-size:12px;color:var(--muted);"></a>
+      </div>
+
+      <div id="popupError" class="error-message" style="display:none"></div>
+
+      <div class="divider divider-top" id="mainDivider"></div>
+
+      <div class="regions-wrapper" id="regionsWrapper">
+        <div class="carousel-nav carousel-nav-left" id="carouselPrev">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </div>
+        <div id="regions" class="regions"></div>
+        <div class="carousel-nav carousel-nav-right" id="carouselNext">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="status" id="statusBlock">
+        <div id="flag" class="flag">🏳️</div>
+        <div>
+          <div id="stateText" class="state off">Disconnected</div>
+          <div id="serverText" class="server">—</div>
+          <div id="timer" class="timer"></div>
+        </div>
+      </div>
+
+      <div class="connect">
+        <button id="btnProxyMode" class="btn btn-proxy-mode" type="button" aria-pressed="false" style="display:none">
+          <span class="proxy-mode-icon proxy-mode-icon--all" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/>
+            </svg>
+          </span>
+          <span class="proxy-mode-icon proxy-mode-icon--sites" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="6" rx="1.5"/>
+              <rect x="3" y="14" width="18" height="6" rx="1.5"/>
+            </svg>
+          </span>
+        </button>
+        <button id="btnToggle" class="btn btn-primary">
+          <span class="btn-glow"></span>
+          <span class="btn-label">Connect</span>
+        </button>
+        <button id="btnAutoConnect" class="btn btn-auto-connect" title="" style="display:none;">
+          <span class="auto-connect-icon">⚡</span>
+        </button>
+      </div>
+      <div id="upsellHints" class="upsell-hints" style="display:none"></div>
+
+      <div style="display:none">
+        <button id="how" class="btn btn-link">Как подключиться?</button>
+        <button id="settingsBtn" class="btn btn-link">Настройки</button>
+        <button id="helpBtn" class="btn btn-link">Поддержка</button>
+        <button id="buyBtn" class="btn btn-link">Купить подписку</button>
+        <button id="renewBtn" class="btn btn-link">Продлить подписку</button>
+      </div>
+      
+      <div id="top-buttons-container" style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+      </div>
+      <div id="bottom-buttons-container" style="display:flex;align-items:center;gap:10px;margin-top:8px;white-space:nowrap">
+      </div>
+    </div>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <h2>Как подключиться?</h2>
+        <ol></ol>
+        <button id="closeModal" class="btn btn-soft wide">Понятно</button>
+      </div>
+    </div>
+    
+    <div id="telegramGiveawayModal" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="giveawayModalTitle">🎉 Розыгрыш 1500 звёзд!</h2>
+        <p id="giveawayModalText" style="margin: 10px 0; font-size: 13px; line-height: 1.5;"></p>
+        <p id="giveawayModalDescription" style="margin: 10px 0 0 0; font-size: 12px; color: var(--muted);"></p>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button id="openTelegramChannel" class="btn btn-soft" style="flex: 1;">Перейти в Telegram</button>
+          <button id="closeGiveawayModal" class="btn btn-soft wide" style="flex: 1;">Пропустить</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="paywallModal" class="modal paywall-modal hidden" role="dialog" aria-modal="true" aria-labelledby="paywallTitle">
+      <div class="paywall-card">
+        <div class="paywall-glow" aria-hidden="true"></div>
+        <div class="paywall-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="url(#paywallGrad)" stroke-width="1.5" opacity="0.9"/>
+            <path d="M16 22.5h16v11.5c0 1.1-.9 2-2 2H18c-1.1 0-2-.9-2-2V22.5z" stroke="url(#paywallGrad)" stroke-width="1.6"/>
+            <path d="M19.5 22.5v-4.2a4.5 4.5 0 0 1 9 0v4.2" stroke="url(#paywallGrad)" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="24" cy="28.5" r="1.6" fill="url(#paywallGrad)"/>
+            <defs>
+              <linearGradient id="paywallGrad" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6ea8ff"/>
+                <stop offset="0.5" stop-color="#4ee3c2"/>
+                <stop offset="1" stop-color="#9a6eff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2 id="paywallTitle" class="paywall-title"></h2>
+        <p id="paywallText" class="paywall-text"></p>
+        <ul id="paywallBenefits" class="paywall-benefits"></ul>
+        <div id="paywallPrice" class="paywall-price"></div>
+        <button id="paywallCta" class="btn paywall-cta wide" type="button"></button>
+        <button id="paywallDismiss" class="btn btn-link paywall-dismiss" type="button"></button>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

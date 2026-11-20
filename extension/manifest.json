@@ -1,0 +1,48 @@
+{
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Yellow VPN"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "content-script.js"
+      ],
+      "matches": [
+        "https://proxy-aurora.space/*",
+        "https://aurora-vpn.ru/*",
+        "https://aurora-vpl.ru/*",
+        "https://aurora-vpnl.ru/*",
+        "https://aurora-vps.ru/*",
+        "https://links-aurora.pro/*",
+        "https://aurora-vpnx.ru/*",
+        "https://aurora-vpns.ru/*",
+        "https://aurora-vpnc.ru/*",
+        "https://aurora-vpny.ru/*"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "description": "Yellow VPN — клиент для серверов Aurora. Локальный таймер отключён; доступность серверов определяется правилами Aurora.",
+  "host_permissions": [
+    "https://servers-aurora-w.ru/*"
+  ],
+  "icons": {
+    "128": "icons/logos/yellow-logo-128.png",
+    "16": "icons/logos/yellow-logo-16.png",
+    "48": "icons/logos/yellow-logo-48.png"
+  },
+  "manifest_version": 3,
+  "name": "Yellow VPN",
+  "options_page": "settings.html",
+  "permissions": [
+    "proxy",
+    "storage",
+    "alarms"
+  ],
+  "version": "3.0.1"
+}
